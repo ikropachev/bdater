@@ -10,7 +10,7 @@ VALUES ('ADMIN'),   --100000
 
 INSERT INTO user (name, email, password, registered, user_role_id)
 VALUES ('admin', 'admin@test.test', 'admin', '2021-12-02 18:00:00', 100000),    --100002
-       ('user', 'user@gmail.com', 'user', '2021-12-02 18:01:00', 100001);       --100003
+       ('user', 'user@test.test', 'user', '2021-12-02 18:01:00', 100001);       --100003
 
 INSERT INTO item_type (name)
 VALUES ('GAME'),    --100004
