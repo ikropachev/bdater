@@ -1,6 +1,5 @@
 package org.ikropachev.bdater.service.datajpa;
 
-import org.ikropachev.bdater.model.Role;
 import org.ikropachev.bdater.model.User;
 import org.ikropachev.bdater.service.AbstractServiceTest;
 import org.ikropachev.bdater.service.UserService;
@@ -11,7 +10,7 @@ import org.springframework.dao.DataAccessException;
 
 import static org.ikropachev.bdater.UserTestData.*;
 import static org.ikropachev.bdater.model.AbstractBaseEntity.NOT_FOUND;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DataJpaUserServiceTest extends AbstractServiceTest {
     @Autowired
@@ -30,7 +29,7 @@ public class DataJpaUserServiceTest extends AbstractServiceTest {
     @Test
     void duplicateMailCreate() {
         assertThrows(DataAccessException.class, () ->
-                service.create(new User(null, "Duplicate", "user@test.test", "newPass", Role.USER)));
+                service.create(new User(null, "Duplicate", "user@test.test", "newPass", 100001)));
     }
 
     @Test

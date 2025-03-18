@@ -3,6 +3,7 @@ package org.ikropachev.bdater.model;
 import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,6 +12,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.Collection;
 import java.util.Date;
 
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
@@ -98,7 +100,7 @@ public class User extends AbstractNamedEntity {
         return password;
     }
 
-    public void setuserRoleId(int userRoleId) {
+    public void setUserRoleId(int userRoleId) {
         this.userRoleId = userRoleId;
     }
 
@@ -111,5 +113,9 @@ public class User extends AbstractNamedEntity {
                 ", enabled=" + enabled +
                 ", userRoleId=" + userRoleId +
                 '}';
+    }
+
+    public Collection<? extends GrantedAuthority> getRoles() {
+        return null;
     }
 }

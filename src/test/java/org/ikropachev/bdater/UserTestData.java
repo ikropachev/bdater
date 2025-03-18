@@ -1,6 +1,5 @@
 package org.ikropachev.bdater;
 
-import org.ikropachev.bdater.model.Role;
 import org.ikropachev.bdater.model.User;
 import org.ikropachev.bdater.web.json.JsonUtil;
 
@@ -17,16 +16,16 @@ public class UserTestData {
     public static final int USER_ID = START_SEQ + 3;
 
     public static final User admin =
-            new User(ADMIN_ID, "admin", "admin@test.test", "admin", Role.ADMIN);
+            new User(ADMIN_ID, "admin", "admin@test.test", "admin", 10000);
     public static final User user =
-            new User(USER_ID, "user", "user@test.test", "user", Role.USER);
+            new User(USER_ID, "user", "user@test.test", "user", 100001);
 
     //Users must be sorted by name, and e-mail for name duplicates.
     public static final List<User> users = List.of(admin, user);
 
     public static User getNew() {
         return new User(null, "New_User", "new@test.test", "newPass", false, new Date(),
-                Collections.singleton(Role.USER));
+                100001);
     }
 
     public static User getUpdated() {
@@ -35,7 +34,7 @@ public class UserTestData {
         updated.setName("Updated_Name");
         updated.setPassword("newPass");
         updated.setEnabled(false);
-        updated.setRoles(Collections.singletonList(Role.ADMIN));
+        updated.setUserRoleId(100001);
         return updated;
     }
 
