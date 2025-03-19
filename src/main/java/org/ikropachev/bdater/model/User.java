@@ -2,22 +2,26 @@ package org.ikropachev.bdater.model;
 
 import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.springframework.security.core.GrantedAuthority;
+import org.hibernate.annotations.*;
+import org.ikropachev.bdater.model.AbstractNamedEntity;
+import org.ikropachev.bdater.model.Role;
+import org.springframework.util.CollectionUtils;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Collection;
 import java.util.Date;
+import java.util.EnumSet;
+import java.util.Set;
 
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Entity
-@Table(name = "users")
+@Table(name = "user")
 public class User extends AbstractNamedEntity {
 
     @Column(name = "email", nullable = false, unique = true)
@@ -41,27 +45,36 @@ public class User extends AbstractNamedEntity {
     @NotNull
     private Date registered = new Date();
 
-    @Column(name = "user_role_id", nullable = false)
-    private int userRoleId;
+    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"),
+            uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "role"}, name = "uk_user_roles")})
+    @Column(name = "role")
+    @ElementCollection(fetch = FetchType.EAGER)
+//    @Fetch(FetchMode.SUBSELECT)
+    @BatchSize(size = 200)
+    @JoinColumn(name = "user_id") //https://stackoverflow.com/a/62848296/548473
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Set<Role> roles;
 
     public User() {
     }
 
     public User(User u) {
-        this(u.id, u.name, u.email, u.password, u.enabled, u.registered, u.userRoleId);
+        this(u.id, u.name, u.email, u.password, u.enabled, u.registered, u.roles);
     }
 
-    public User(Integer id, String name, String email, String password, int userRoleId) {
-        this(id, name, email, password, true, new Date(), userRoleId);
+    public User(Integer id, String name, String email, String password, Role role, Role... roles) {
+        this(id, name, email, password, true, new Date(), EnumSet.of(role, roles));
     }
 
-    public User(Integer id, String name, String email, String password, boolean enabled, Date registered, int userRoleId) {
+    public User(Integer id, String name, String email, String password, boolean enabled, Date registered, Collection<Role> roles) {
         super(id, name);
         this.email = email;
         this.password = password;
         this.enabled = enabled;
         this.registered = registered;
-        this.userRoleId = userRoleId;
+        setRoles(roles);
     }
 
     public String getEmail() {
@@ -92,16 +105,16 @@ public class User extends AbstractNamedEntity {
         return enabled;
     }
 
-    public int getUserRoleId() {
-        return userRoleId;
+    public Set<Role> getRoles() {
+        return roles;
     }
 
     public String getPassword() {
         return password;
     }
 
-    public void setUserRoleId(int userRoleId) {
-        this.userRoleId = userRoleId;
+    public void setRoles(Collection<Role> roles) {
+        this.roles = CollectionUtils.isEmpty(roles) ? EnumSet.noneOf(Role.class) : EnumSet.copyOf(roles);
     }
 
     @Override
@@ -111,11 +124,7 @@ public class User extends AbstractNamedEntity {
                 ", email=" + email +
                 ", name=" + name +
                 ", enabled=" + enabled +
-                ", userRoleId=" + userRoleId +
+                ", roles=" + roles +
                 '}';
-    }
-
-    public Collection<? extends GrantedAuthority> getRoles() {
-        return null;
     }
 }

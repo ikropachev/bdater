@@ -1,5 +1,6 @@
 package org.ikropachev.bdater;
 
+import org.ikropachev.bdater.model.Role;
 import org.ikropachev.bdater.model.User;
 import org.ikropachev.bdater.web.json.JsonUtil;
 
@@ -12,20 +13,20 @@ import static org.ikropachev.bdater.model.AbstractBaseEntity.START_SEQ;
 public class UserTestData {
     public static final MatcherFactory.Matcher<User> USER_MATCHER =
             MatcherFactory.usingIgnoringFieldsComparator(User.class, "registered", "password");
-    public static final int ADMIN_ID = START_SEQ + 2;
-    public static final int USER_ID = START_SEQ + 3;
+    public static final int ADMIN_ID = START_SEQ;
+    public static final int USER_ID = START_SEQ + 1;
 
     public static final User admin =
-            new User(ADMIN_ID, "admin", "admin@test.test", "admin", 10000);
+            new User(ADMIN_ID, "admin", "admin@test.test", "admin", Role.ADMIN);
     public static final User user =
-            new User(USER_ID, "user", "user@test.test", "user", 100001);
+            new User(USER_ID, "user", "user@test.test", "user", Role.USER);
 
     //Users must be sorted by name, and e-mail for name duplicates.
     public static final List<User> users = List.of(admin, user);
 
     public static User getNew() {
-        return new User(null, "New_User", "new@test.test", "newPass", false, new Date(),
-                100001);
+        return new User(null, "New_User", "new@gmail.com", "newPass", false, new Date(),
+                Collections.singleton(Role.USER));
     }
 
     public static User getUpdated() {
@@ -34,7 +35,7 @@ public class UserTestData {
         updated.setName("Updated_Name");
         updated.setPassword("newPass");
         updated.setEnabled(false);
-        updated.setUserRoleId(100001);
+        updated.setRoles(Collections.singletonList(Role.ADMIN));
         return updated;
     }
 

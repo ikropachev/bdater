@@ -1,5 +1,6 @@
 package org.ikropachev.bdater.service;
 
+import org.ikropachev.bdater.AuthorizedUser;
 import org.ikropachev.bdater.model.User;
 import org.ikropachev.bdater.repository.datajpa.DataJpaUserRepository;
 import org.ikropachev.bdater.to.UserTo;
@@ -20,7 +21,7 @@ import static org.ikropachev.bdater.util.ValidationUtil.checkNotFoundWithId;
 
 @Service("userService")
 @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class UserService {
+public class UserService implements UserDetailsService {
 
     private final DataJpaUserRepository repository;
 
@@ -28,13 +29,13 @@ public class UserService {
         this.repository = repository;
     }
 
-    @CacheEvict(value = "users", allEntries = true)
+    @CacheEvict(value = "user", allEntries = true)
     public User create(User user) {
         Assert.notNull(user, "user must not be null");
         return repository.save(user);
     }
 
-    @CacheEvict(value = "users", allEntries = true)
+    @CacheEvict(value = "user", allEntries = true)
     public void delete(int id) {
         checkNotFoundWithId(repository.delete(id), id);
     }
@@ -52,13 +53,13 @@ public class UserService {
         return repository.getAll();
     }
 
-    @CacheEvict(value = "users", allEntries = true)
+    @CacheEvict(value = "user", allEntries = true)
     public void update(User user) {
         Assert.notNull(user, "user must not be null");
         repository.save(user);
     }
 
-    @CacheEvict(value = "users", allEntries = true)
+    @CacheEvict(value = "user", allEntries = true)
     @Transactional
     public void update(UserTo userTo) {
         User user = get(userTo.id());
@@ -66,7 +67,7 @@ public class UserService {
         repository.save(updatedUser); // !! need only for JDBC implementation
     }
 
-    @CacheEvict(value = "users", allEntries = true)
+    @CacheEvict(value = "user", allEntries = true)
     @Transactional
     public void enable(int id, boolean enabled) {
         User user = get(id);
@@ -74,4 +75,12 @@ public class UserService {
         repository.save(user);  // !! need only for JDBC implementation
     }
 
+    @Override
+    public AuthorizedUser loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = repository.getByEmail(email.toLowerCase());
+        if (user == null) {
+            throw new UsernameNotFoundException("User " + email + " is not found");
+        }
+        return new AuthorizedUser(user);
+    }
 }

@@ -1,5 +1,6 @@
 package org.ikropachev.bdater.util;
 
+import org.ikropachev.bdater.model.Role;
 import org.ikropachev.bdater.model.User;
 import org.ikropachev.bdater.to.UserTo;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -7,7 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class UserUtil {
 
     public static User createNewFromTo(UserTo userTo) {
-        return new User(null, userTo.getName(), userTo.getEmail().toLowerCase(), userTo.getPassword(), 100001);
+        return new User(null, userTo.getName(), userTo.getEmail().toLowerCase(), userTo.getPassword(), Role.USER);
     }
 
     public static UserTo asTo(User user) {

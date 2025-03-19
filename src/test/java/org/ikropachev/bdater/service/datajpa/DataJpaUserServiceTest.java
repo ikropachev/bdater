@@ -1,5 +1,6 @@
 package org.ikropachev.bdater.service.datajpa;
 
+import org.ikropachev.bdater.model.Role;
 import org.ikropachev.bdater.model.User;
 import org.ikropachev.bdater.service.AbstractServiceTest;
 import org.ikropachev.bdater.service.UserService;
@@ -29,7 +30,7 @@ public class DataJpaUserServiceTest extends AbstractServiceTest {
     @Test
     void duplicateMailCreate() {
         assertThrows(DataAccessException.class, () ->
-                service.create(new User(null, "Duplicate", "user@test.test", "newPass", 100001)));
+                service.create(new User(null, "Duplicate", "user@test.test", "newPass", Role.USER)));
     }
 
     @Test
@@ -56,7 +57,7 @@ public class DataJpaUserServiceTest extends AbstractServiceTest {
 
     @Test
     void getByEmail() {
-        User user = service.getByEmail("admin@gmail.com");
+        User user = service.getByEmail("admin@test.test");
         USER_MATCHER.assertMatch(user, admin);
     }
 
